@@ -537,8 +537,9 @@ export default function QuizFunnel({ quizId }) {
     const scores = dimensionScores();
     const level = getLevel(totalScore);
     const dims = ["clareza", "previsibilidade", "autonomia", "decisao", "crescimento"];
-    const weakest = dims.reduce((a, b) => (scores[a] <= scores[b] ? a : b));
-    const strongest = dims.reduce((a, b) => (scores[a] >= scores[b] ? a : b));
+    const sorted = [...dims].sort((a, b) => scores[a] - scores[b]);
+    const weakest = sorted[0];
+    const strongest = sorted[sorted.length - 1] === weakest ? sorted[sorted.length - 2] : sorted[sorted.length - 1];
 
     return (
       <div ref={containerRef} style={{ ...baseStyle, overflow: "auto" }}>
@@ -562,11 +563,10 @@ export default function QuizFunnel({ quizId }) {
             </p>
           </div>
 
-          {/* Radar Chart */}
+          {/* Score Bars */}
           <div style={cardStyle}>
             <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 24, textAlign: "center" }}>Seu Mapa de Maturidade Financeira</h3>
-            <RadarChart scores={scores} />
-            <div style={{ marginTop: 28 }}>
+            <div>
               {dims.map((d) => (
                 <ScoreBar
                   key={d}
