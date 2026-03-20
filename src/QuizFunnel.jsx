@@ -90,12 +90,12 @@ const QUESTIONS = [
     id: 8,
     dimension: "crescimento",
     label: "Preparação para Crescimento",
-    question: "Se um investidor ou fundo de private equity batesse na sua porta hoje pedindo seus números, você...",
+    question: "Quando sua empresa precisa de crédito ou capital de giro, como isso normalmente acontece?",
     options: [
-      { text: "Ficaria nervoso — meus números não estão organizados", score: 1 },
-      { text: "Teria o básico, mas não com a profundidade e clareza necessárias", score: 2 },
-      { text: "Estaria razoavelmente preparado, mas precisaria de uns dias", score: 3 },
-      { text: "Mostraria tudo com confiança — está organizado e pronto", score: 4 },
+      { text: "Na emergência — antecipo recebível ou pego empréstimo no susto, com o juro que vier", score: 1 },
+      { text: "Negocio com o banco, mas geralmente já estou pressionado e aceito condições ruins", score: 2 },
+      { text: "Consigo planejar com alguma antecedência, mas nem sempre pego as melhores taxas", score: 3 },
+      { text: "Planejo com antecedência, comparo opções e só tomo crédito quando faz sentido estratégico", score: 4 },
     ],
   },
   {
