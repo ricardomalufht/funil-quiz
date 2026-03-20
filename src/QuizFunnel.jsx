@@ -539,7 +539,7 @@ export default function QuizFunnel({ quizId }) {
     const dims = ["clareza", "previsibilidade", "autonomia", "decisao", "crescimento"];
     const sorted = [...dims].sort((a, b) => scores[a] - scores[b]);
     const weakest = sorted[0];
-    const strongest = sorted[sorted.length - 1] === weakest ? sorted[sorted.length - 2] : sorted[sorted.length - 1];
+    const strongest = sorted[sorted.length - 1];
 
     return (
       <div ref={containerRef} style={{ ...baseStyle, overflow: "auto" }}>
