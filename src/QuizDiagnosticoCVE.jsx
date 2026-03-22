@@ -477,6 +477,66 @@ function WelcomeStep({ onNext }) {
   );
 }
 
+function AnalyzingStep({ onComplete }) {
+  const messages = [
+    "Analisando suas respostas...",
+    "Encontrando oportunidades de melhoria de caixa...",
+    "Mapeando gargalos de lucratividade...",
+    "Identificando onde o dinheiro está escapando...",
+    "Calculando potencial de crescimento financeiro...",
+    "Preparando seu diagnóstico personalizado...",
+  ];
+
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      if (i >= messages.length) {
+        clearInterval(interval);
+        setTimeout(onComplete, 1200);
+      }
+      setVisibleCount(i + 1);
+    }, 900);
+    setVisibleCount(1);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", textAlign: "center",
+      maxWidth: 480, margin: "0 auto", padding: "0 24px",
+    }}>
+      <div style={{
+        width: 40, height: 40, borderRadius: "50%",
+        border: "2px solid rgba(201,168,76,0.2)",
+        borderTopColor: "#C9A84C",
+        animation: "spin 1s linear infinite",
+        marginBottom: 40,
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
+        {messages.map((msg, i) => (
+          <p key={i} style={{
+            fontFamily: "'Inter', sans-serif", fontSize: 14,
+            color: i < visibleCount
+              ? "rgba(245,240,232,0.55)"
+              : "transparent",
+            lineHeight: 1.6,
+            transition: "color 0.6s ease, transform 0.6s ease",
+            transform: i < visibleCount ? "translateY(0)" : "translateY(8px)",
+          }}>
+            {msg}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FinalStep({ answers }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
@@ -770,6 +830,7 @@ export default function QuizDiagnosticoCVE({ quizId }) {
   const [answers, setAnswers] = useState({});
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [analyzing, setAnalyzing] = useState(false);
   const containerRef = useRef(null);
 
   const activeSteps = STEPS.filter(s => {
@@ -793,6 +854,17 @@ export default function QuizDiagnosticoCVE({ quizId }) {
   const goNext = () => {
     if (animating) return;
     if (currentIndex >= activeSteps.length - 1) return;
+    const nextIndex = currentIndex + 1;
+    const nextStep = activeSteps[nextIndex];
+    if (nextStep && nextStep.type === "final") {
+      setDirection(1);
+      setAnimating(true);
+      setTimeout(() => {
+        setAnalyzing(true);
+        setAnimating(false);
+      }, 300);
+      return;
+    }
     setDirection(1);
     setAnimating(true);
     setTimeout(() => {
@@ -851,7 +923,7 @@ export default function QuizDiagnosticoCVE({ quizId }) {
     }
   };
 
-  const isQuestion = step && step.type !== "welcome" && step.type !== "final";
+  const isQuestion = step && step.type !== "welcome" && step.type !== "final" && !analyzing;
 
   return (
     <div style={{
@@ -884,8 +956,12 @@ export default function QuizDiagnosticoCVE({ quizId }) {
           : "translateY(0)",
         transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
       }}>
-        {step?.type === "welcome" && <WelcomeStep onNext={goNext} />}
-        {step?.type === "final" && <FinalStep answers={answers} />}
+        {step?.type === "welcome" && !analyzing && <WelcomeStep onNext={goNext} />}
+        {step?.type === "final" && !analyzing && <FinalStep answers={answers} />}
+        {analyzing && <AnalyzingStep onComplete={() => {
+          setAnalyzing(false);
+          setCurrentIndex(activeSteps.length - 1);
+        }} />}
 
         {isQuestion && (
           <div style={{
