@@ -1,5 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+
+async function submitToGoogleSheets(answers) {
+  if (!GOOGLE_SCRIPT_URL) return;
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    ...answers,
+    tentativas: Array.isArray(answers.tentativas) ? answers.tentativas.join("; ") : answers.tentativas || "",
+    receio: Array.isArray(answers.receio) ? answers.receio.join("; ") : answers.receio || "",
+    motivacao_real: Array.isArray(answers.motivacao_real) ? answers.motivacao_real.join("; ") : answers.motivacao_real || "",
+  };
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    console.error("Failed to submit to Google Sheets:", e);
+  }
+}
+
 const STEPS = [
   {
     id: "welcome",
@@ -857,6 +882,7 @@ export default function QuizDiagnosticoCVE({ quizId }) {
     const nextIndex = currentIndex + 1;
     const nextStep = activeSteps[nextIndex];
     if (nextStep && nextStep.type === "final") {
+      submitToGoogleSheets(answers);
       setDirection(1);
       setAnimating(true);
       setTimeout(() => {
