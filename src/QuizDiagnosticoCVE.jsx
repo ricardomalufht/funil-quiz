@@ -17,8 +17,7 @@ async function submitToGoogleSheets(answers) {
     await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
-      headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(payload),
+      body: new URLSearchParams({ payload: JSON.stringify(payload) }),
     });
   } catch (e) {
     console.error("Failed to submit to Google Sheets:", e);
